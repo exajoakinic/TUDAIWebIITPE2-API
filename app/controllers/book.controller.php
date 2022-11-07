@@ -27,13 +27,13 @@ class BookController extends GenericApiController {
     protected function getAndValidateFromPost() {
         $book = parent::getAndValidateFromPost();
         // Verifica que exista el autor recibido
-        if (!(new AuthorModel)->getById($book->id_author)) {
+        if (!(new AuthorModel)->get($book->id_author)) {
             $this->view->response("Campo 'id_author' no referencia a un autor existente", "400");
             die;
         }
 
         // Verifica que exista el género recibido
-        if (!(new GenreModel)->getById($book->id_genre)) {
+        if (!(new GenreModel)->get($book->id_genre)) {
             $this->view->response("Campo 'id_genre' no referencia a un género existente", "400");
             die;
             }
@@ -57,7 +57,7 @@ class BookController extends GenericApiController {
      */
     protected function getAndValidateBeforeEdit($id) {
         $book = parent::getAndValidateBeforeEdit($id);
-     /*    $oldBook = $this->model->getById($id);
+     /*    $oldBook = $this->model->get($id);
         if (!empty($_FILES["img_file_cover"]["name"])
             || $book->url_cover != $oldBook->url_cover) {
                         $this->model->removeCoverFile($oldBook->url_cover);
@@ -67,8 +67,8 @@ class BookController extends GenericApiController {
     /**
      * Sobreescrive validación antes de borrar por necesitar eliminar la tapa del servidor
      */
-    protected function getAndValidateBeforeRemove($id) {
-        $book = parent::getAndValidateBeforeRemove($id);
+    protected function getAndValidateBeforeDelete($id) {
+        $book = parent::getAndValidateBeforeDelete($id);
         $this->model->removeCoverFile($book->url_cover);
         return $book;
     }

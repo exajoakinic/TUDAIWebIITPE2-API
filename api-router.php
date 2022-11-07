@@ -16,9 +16,9 @@ foreach ($endpoints as $i) {
     $router->addRoute($i['endpoint'], 'GET', $i['controller'], 'getAll');
     $router->addRoute($i['endpoint'] . '/:ID', 'GET', $i['controller'], 'get');
     if ($i['ABM']) {
-        $router->addRoute($i['endpoint'].'/:ID', 'DELETE', $i['controller'], 'delete');
         $router->addRoute($i['endpoint'], 'POST', $i['controller'], 'insert'); 
         $router->addRoute($i['endpoint'].'/:ID', 'PUT', $i['controller'], 'update');
+        $router->addRoute($i['endpoint'].'/:ID', 'DELETE', $i['controller'], 'delete');
     }
 }
 

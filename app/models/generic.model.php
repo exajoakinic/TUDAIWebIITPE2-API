@@ -113,9 +113,8 @@ class GenericApiModel extends ConnectionDB {
         return $item;
     }
     
-    public function getById ($id) {
+    public function get ($id) {
         return $this->getBy("id", $id);
-        
     }
 
     public function remove ($id) {
@@ -147,7 +146,7 @@ class GenericApiModel extends ConnectionDB {
         $query->execute($values);
     }
 
-    public final function add ($item) {
+    public final function insert ($item) {
         $listFields = "";
         $questionMarks ="";
         $values = [];

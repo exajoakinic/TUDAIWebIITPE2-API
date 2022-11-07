@@ -14,13 +14,13 @@ class AuthorController extends GenericApiController {
                         ]);
     }
 
-    protected function getAndValidateBeforeRemove($id) {
+    protected function getAndValidateBeforeDelete($id) {
         //Traigo el elemento utilizando la clase padre y su primera validación de existencia
-        $author = parent::getAndValidateBeforeRemove($id);
+        $author = parent::getAndValidateBeforeDelete($id);
         $referencedBooks =(new BookModel())->getByAuthor($id);
         if (count($referencedBooks)>0) {
             //MUESTRO PÁGINA DE ERROR PORQUE NO SE PUEDE BORRAR EL AUTOR
-            $this->view->response("Imposible eliminar el autor porque tiene libros referenciados", 400);
+            $this->view->response("Imposible eliminar el autor '$author->author' porque tiene libros referenciados", 400);
             die;
         }
         return $author;

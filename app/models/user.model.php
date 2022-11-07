@@ -1,6 +1,6 @@
 <?php
 
-require_once('./app/models/generic_model.php');
+require_once('./app/models/generic.model.php');
 
 class UserModel extends GenericModel {
 

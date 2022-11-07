@@ -14,33 +14,14 @@ class GenreController extends GenericApiController {
                         ]
                         );
     }
-
-    protected function redirectionAfterEdit($id) {
-        header("location:" . BASE_URL . "genres");
-    }
-    protected function redirectionAfterAdd($id) {
-        header("location:" . BASE_URL . "genres");
-    }
-    protected function redirectionAfterRemove($removedItem) {
-        //header("location:" . BASE_URL . "genres");
-        $this->showAll("Se ha eliminado correctamente el género '$removedItem->genre'");
-    }
     
-    /**
-     * MUESTRA TODOS LOS ITEMS DE LA ENTIDAD
-     */
-    function showAll($message = null) {
-        $items = $this-> model-> getAll();
-        $this-> view-> showAll($items, "Listado de géneros", $message);
-    }
-
-    protected function getAndValidateBeforeRemove($id) {
+    protected function getAndValidateBeforeDelete($id) {
         //Traigo el elemento utilizando la clase padre y su primera validación de existencia
-        $genre = parent::getAndValidateBeforeRemove($id);
+        $genre = parent::getAndValidateBeforeDelete($id);
         $referencedBooks =(new BookModel())->getByGenre($id);
         if (count($referencedBooks)>0) {
             //MUESTRO PÁGINA DE ERROR PORQUE NO SE PUEDE BORRAR EL AUTOR
-            $this->view->showErrorCantRemove($genre, $referencedBooks);
+            $this->view->response("Imposible eliminar el género '$genre->genre' porque tiene libros referenciados", 400);
             die;
         }
         return $genre;

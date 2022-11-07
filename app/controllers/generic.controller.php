@@ -9,7 +9,8 @@ abstract class GenericApiController {
     private $validFilterColumns;
 
     protected const MIN_LIMIT = 1;
-    protected const MAX_LIMIT = 500;
+    protected const DEFAULT_LIMIT = 30;
+    protected const MAX_LIMIT = 1000;
 
     function __construct($model, $fields, $validFilterColumns) {
         $this->model = $model;
@@ -17,16 +18,21 @@ abstract class GenericApiController {
         $this->view = new ApiView();
 
         $this->validFilterColumns= $validFilterColumns;
-        AuthHelper::openSession();
+
+        // lee el body del request
+        $this->data = file_get_contents("php://input");
     }
 
+    private function getData() {
+        return json_decode($this->data);
+    }
 
     /**
      * MUESTRA TODOS LOS ITEMS DE LA ENTIDAD
      */
     function get($params = null) {
         $id = $params[':ID'];
-        $item = $this-> model-> getById($id);
+        $item = $this-> model-> get($id);
 
         $this->view->response($item, 200);
     }
@@ -42,6 +48,7 @@ abstract class GenericApiController {
     }
 
     /**
+     * PARA FILTRO, ORDEN, LÍMITE, PAGINACIÓN
      * VALIDA VALORES RECIBIDOS POR $_GET Y DEVUELVE ARREGLO ASOCIATIVO
      * PARA EL MODEL CON VALORES QUE SE VAN A INYECTAR SANITIZADOS
      */
@@ -105,10 +112,10 @@ abstract class GenericApiController {
             }
         }
 
-        $res['limit'] = $res['limit'] ?? 500;
+        //Límite Default si no fue definido
+        $res['limit'] = $res['limit'] ?? self::DEFAULT_LIMIT;
         return $res;
     }
-
 
     /**
      * 
@@ -118,112 +125,105 @@ abstract class GenericApiController {
         die;
     }
 
-     /**
-     * --------------------------------------------------------------
-     * 
-     * VALIDAR LO QUE SIGUE... ESCRITO ANTERIORMENTE
-     * 
-     * --------------------------------------------------------------
+    /**
+     * ---------------------------------------------------------------------------
+     *                                   A B M
+     * ---------------------------------------------------------------------------
      */
 
-     /**
-     * EDITAR
-     * Responsabilidad de validación: getAndValidateBeforeEdit($id)
+    /**
+     * AGREGAR
      */
-    function edit ($id) {
-        //VERIFICA QUE ESTÉ LOGUEADO
-        AuthHelper::checkLoggedIn();
+    public function insert($params = null) {
+        $item = $this->getAndValidateBeforeInsert();
 
-        $item = $this->getAndValidateBeforeEdit($id);
-
-        $this->model->edit($item);
+        $id = $this->model->insert($item);
+        $item = $this->model->get($id);
+        $this->view->response($item, 201);
     }
+    /**
+    * EDITAR
+    */
+   function update ($params = null) {
+       $id=$params[":ID"];
+       //VERIFICA QUE ESTÉ LOGUEADO
+       // AuthHelper::checkLoggedIn();
+       
+       $item = $this->getAndValidateBeforeUpdate($id);
 
+       $this->model->edit($item);
+       $this->view->response($this->model->get($id), 200);
+    }
+    
+    
+    /**
+     * ELIMINAR
+     */
+    public function delete ($params = null) {
+        $id=$params[":ID"];
+        //VERIFICA QUE ESTÉ LOGUEADO
+        // AuthHelper::checkLoggedIn();
+        
+        $item = $this->getAndValidateBeforeDelete($id);
+        $this->model->remove($id);
+        $this->view->response($item);
+    }
+    
+    /**
+     * VALIDACIÓN ANTES DE AGREGAR
+     */
+    protected function getAndValidateBeforeInsert() {
+        return $this->getAndValidateFromBody();
+    }
+    
+    /**
+     * Genera objeto con los datos esperados por POST,
+     * previa verificación de que estén todos los datos seteados.
+     */
+    protected function getAndValidateFromBody() {
+        $item = $this->getData();
+        //keys de $item y valores de $this->fields deben ser biyectivos
+        //Valida que hayan llegado todos los campos necesarios
+        foreach ($this->fields as $field) {
+            if (!isset($item->$field)) {
+                $this->view->response("El campo '$field' debe estar seteado", 400);
+                die;
+            }
+        }
+        //Valida que no haya llegado campos inválidos
+        foreach ($item as $key => $field) {
+            if (!in_array($key, $this->fields)) {
+                $this->view->response("'$key' no es un campo válido", 400);
+                die;
+            }            
+        }
+
+        return $item;
+    }
+    
     /**
      * VALIDACIÓN ANTES DE EDITAR
      * Devuelve item con el id y los datos recibidos por post
      */
-    protected function getAndValidateBeforeEdit($id) {
-        if (!$this->model->getById($id)) {
-            $this->view->showErrorNotFinded();
-            header($_SERVER["SERVER_PROTOCOL"]." 400 Bad Request");
+    protected function getAndValidateBeforeUpdate($id) {
+        if (!$this->model->get($id)) {
+            $this->view->response("Elemento con 'id'=$id inexistente", 404);
             die;
         }
-        $item = $this->getAndValidateFromPost();
+        $item = $this->getAndValidateFromBody();
         $item->id = $id;
         return $item;
     }
-
-    /**
-     * AGREGAR
-     * Responsabilidad validación POST: getAndValidateFromPost()
-     * Responsabilidad de redirección: redirectionAfterAdd()
-     */
-    function add () {
-        //VERIFICA QUE ESTÉ LOGUEADO
-        AuthHelper::checkLoggedIn();
-
-        $item = $this->getAndValidateFromPost();
-        $id = $this->model->add($item);
-    }
-
-    /**
-     * VALIDACIÓN ANTES DE AGREGAR
-     */
-    protected function getAndValidateBeforeAdd() {
-        return $this->getAndValidateFromPost();
-    }
-
-    /**
-     * ELIMINAR
-     * 1 Corre función getAndValidateBeforeRemove($id) -> debe frenar ejecución si no hay que eliminar
-     * 2 Ejecuta redirectionAfterRemove si pudo eliminar
-     * 2 Muestra mensaje error si no debió eliminar
-     */
-    public function remove ($id) {
-        //VERIFICA QUE ESTÉ LOGUEADO
-        AuthHelper::checkLoggedIn();
-
-        $item = $this->getAndValidateBeforeRemove($id);
-
-        if ($item) {
-            $this->model->remove($id);
-        }
-    }
-
-    /**
-     * VALIDACIÓN ANTES DE ELIMINAR
-     */
-    protected function getAndValidateBeforeRemove($id) {
-        $item = $this->model->getById($id);
-        if ($item) {
-            return $item;
-        } else {
-            $this->view->showErrorNotFinded();
-            header($_SERVER["SERVER_PROTOCOL"]." 400 Bad Request");
-            die;
-        }
-    }
-
-    /**
-     * Genera objeto Book con los datos esperados por POST,
-     * previa verificación de que estén todos los datos seteados.
-     * 
-     * Inicialmente esta función era abstracta en GenericController y
-     * se definía en cada controlador específico.
-     * Luego se abstrajo mediante el foreach, previo recibir los campos
-     * a través del constructor.
-     */
-    protected function getAndValidateFromPost() {
-        $item = new stdClass();
-        foreach ($this->fields as $field) {
-            if (!isset($_POST[$field])) {
-                $this->view->showError("Se ha cancelado la operación. El campo '$field' debe estar seteado", "Error en datos recibidos");
+       /**
+        * VALIDACIÓN ANTES DE ELIMINAR
+        */
+       protected function getAndValidateBeforeDelete($id) {
+            $item = $this->model->get($id);
+            if (!$item) {
+                $this->view->response("Elemento con 'id'=$id inexistente", 404);
                 die;
             }
-            $item->$field = $_POST[$field];
-        }
-        return $item;
-    }
+            return $item;
+       }
     
 }
