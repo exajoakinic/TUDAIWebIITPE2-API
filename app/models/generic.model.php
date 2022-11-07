@@ -44,7 +44,7 @@ class GenericApiModel extends ConnectionDB {
                 if (!empty($where)) {
                     $where .= " AND ";
                 }
-                $where .= $key . " = ?";
+                $where .= $key . " " . $params['operator'] ." ?";
                 $sanitizedItems[] = $value;
             }
             if (!empty($where)) {

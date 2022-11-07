@@ -8,9 +8,19 @@ abstract class GenericApiController {
     private $fields;
     private $validFilterColumns;
 
+
     protected const MIN_LIMIT = 1;
     protected const DEFAULT_LIMIT = 30;
     protected const MAX_LIMIT = 1000;
+    protected const VALID_FILTER_OPERATORS = [
+        'like' => 'like',
+        'equal' => '=',
+        '=' => '=',
+        '>' => '>',
+        '>=' => '>=',
+        '<=' => '<=',
+        '<=' => '<=',
+    ];
 
     function __construct($model, $fields, $validFilterColumns) {
         $this->model = $model;
@@ -21,6 +31,8 @@ abstract class GenericApiController {
 
         // lee el body del request
         $this->data = file_get_contents("php://input");
+
+
     }
 
     private function getData() {
@@ -98,6 +110,16 @@ abstract class GenericApiController {
                     }
                     $res['page'] = $page;
                     break;
+                case 'o':
+                    $key='operator';
+                case 'operator':
+                    if (isset(self::VALID_FILTER_OPERATORS[$value])) {
+                        $res['operator'] = self::VALID_FILTER_OPERATORS[$value];
+                    } else {
+                        $this->view->response("$value no es un operador válido", 400);
+                        die;
+                    }
+                    break;
                 case 'resource':
                     //nada que hacer, salvo prevenir ejecución del default
                     break;
@@ -112,6 +134,8 @@ abstract class GenericApiController {
             }
         }
 
+        //Operador Default: =
+        $res['operator'] = $res['operator'] ?? '=';
         //Límite Default si no fue definido
         $res['limit'] = $res['limit'] ?? self::DEFAULT_LIMIT;
         return $res;
