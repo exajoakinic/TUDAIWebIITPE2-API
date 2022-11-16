@@ -145,8 +145,8 @@ El operador like permite utilizar carácteres especiales de SQL como '%'.
 
 Si se realizan varios filtros en la consulta, todos utilizarán el mismo operador.
 
-# EJEMPLO BODY A UTILIZAR CON POST Y PUT
-## books
+## EJEMPLO BODY A UTILIZAR CON POST Y PUT
+### books
 {
 
     "isbn": "9789501532203",
@@ -164,14 +164,14 @@ Si se realizan varios filtros en la consulta, todos utilizarán el mismo operado
 
 Para que se pueda completar la transcción id_author y id_genre deben referenciar a un un autor o género válido, respectivamente.
 
-## authors
+### authors
 {
     
     "author": "autor",
 
     "note": "creadO desde POSTMAN por API"
  }
-## genres
+### genres
 {
     
     "genre": "Autor de prueba por API",
