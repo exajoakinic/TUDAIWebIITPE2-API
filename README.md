@@ -75,13 +75,13 @@ GET api/$endpoint?clave1=valor1&clave2=valor2& ... &claveX=valorX
 ## ORDENAR
 CLAVE: orderby | order_by | sortby | sort_by
 
-- POSIBLES VALORES para books:
+POSIBLES VALORES para books:
 id | isbn | title | id_author | id_genre | price | url_cover | genre | author 
 
-- POSIBLES VALORES para authors:
+POSIBLES VALORES para authors:
 id | author | note
 
-- POSIBLES VALORES para genres:
+POSIBLES VALORES para genres:
 id | genre | note
 
 ### ORDEN ASCENDENTE O DESCENDENTE
@@ -125,14 +125,15 @@ CLAVE: campo válido
 
 VALOR: valor a buscar
 
-- Posibles campos para books:
+Posibles campos para books:
 id | isbn | title | id_author | id_genre | price | url_cover | genre | author 
 
-- Posibles campos para authors:
+Posibles campos para authors:
 id | author | note
 
-- Posibles campos para genres:
+Posibles campos para genres:
 id | genre | note
+
 
 CLAVE: operator | o
 
