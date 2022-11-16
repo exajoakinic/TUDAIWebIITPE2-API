@@ -20,7 +20,9 @@ Cada vez que aparezca escrito $endpoint, significará que se podrá elegir cualq
 
 Devuelve el objeto con id :id de la entidad seleccionada en formato JSON.
 
-Código de respuesta HTTP: 200 | 404 si no existe
+Código de respuesta HTTP:
+- 200 si se ejecutó la consulta exitosamente
+- 404 si no existe
 
 ## OBTENER LISTADO DE ENTIDADES
 - GET /api/$endpoint
