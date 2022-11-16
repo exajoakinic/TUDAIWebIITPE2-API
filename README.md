@@ -67,13 +67,18 @@ Códigos de respuesta HTTP:
 # PARÁMETROS GET
 Para personalizar el listado a obtener puede enviarse por GET un listado de duplas CLAVE-VALOR.
 Los posibles valores para CLAVE y VALOR no son sensibles a mayúsculas y minúsculas (no case sensitive).
+Se pueden definir varias duplas en la consulta respetando la forma:
+GET api/$endpoint?clave1=valor1&clave2=valor2& ... &claveX=valorX
 
 ## ORDENAR
-CLAVE: orderby / order_by / sortby / sort_by
+CLAVE: orderby | order_by | sortby | sort_by
+
 POSIBLES VALORES para books:
 id | isbn | title | id_author | id_genre | price | url_cover | genre | author 
+
 POSIBLES VALORES para authors:
 id | author | note
+
 POSIBLES VALORES para genres:
 id | genre | note
 
