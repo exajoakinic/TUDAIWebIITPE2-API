@@ -148,6 +148,7 @@ Si se realizan varios filtros en la consulta, todos utilizarán el mismo operado
 # EJEMPLO BODY A UTILIZAR CON POST Y PUT
 ## books
 {
+
     "isbn": "9789501532203",
 
     "title": "CURAME",
@@ -164,12 +165,16 @@ Si se realizan varios filtros en la consulta, todos utilizarán el mismo operado
 Para que se pueda completar la transcción id_author y id_genre deben referenciar a un un autor o género válido, respectivamente.
 
 ## authors
-{"author": "autor",
+{
+    
+    "author": "autor",
 
-"note": "creadO desde POSTMAN por API"
+    "note": "creadO desde POSTMAN por API"
  }
 ## genres
-{"genre": "Autor de prueba por API",
+{
+    
+    "genre": "Autor de prueba por API",
 
-"note": "creadO desde POSTMAN por API"
+    "note": "creadO desde POSTMAN por API"
  }
