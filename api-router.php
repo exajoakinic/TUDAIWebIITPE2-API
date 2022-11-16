@@ -21,6 +21,8 @@ foreach ($endpoints as $i) {
         $router->addRoute($i['endpoint'].'/:ID', 'DELETE', $i['controller'], 'delete');
     }
 }
+$router->addRoute("auth/token", 'GET', 'AuthApiController', 'token');
+
 
 $router->setDefaultRoute('BookController', 'defaultAction');
 
