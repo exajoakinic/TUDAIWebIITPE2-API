@@ -51,7 +51,7 @@ Códigos de respuesta HTTP:
 Debe enviarse en el body un JSON con la entidad a agregar respetando las estructuras mencionadas en sección ESTRUCTURA ENTIDADES A UTILIZAR CON POST Y PUT.
 
 Códigos de respuesta HTTP:
-- 200 si se ejecutó la operación exitosamente
+- 201 si se ejecutó la operación exitosamente
 - 400 si no se respeta la estructura de la entidad
 
 ## ELIMINAR ENTIDAD
