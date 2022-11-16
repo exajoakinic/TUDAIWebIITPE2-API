@@ -1,5 +1,5 @@
 # TUDAIWebIITPE2-API
-# API Rest RESTful
+# API RESTful
 ## _WEB 2 - TP Especial - Parte 2_
 
 ## Endpoints:
