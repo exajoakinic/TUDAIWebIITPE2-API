@@ -1,5 +1,5 @@
-# _WEB 2 - TP Especial - Parte 2_
-# API RESTful
+# _WEB 2 - TP Especial - Parte 2_ API RESTful
+_Iglesias Coqueti, Joaquín_
 
 ## Endpoints:
 - books
