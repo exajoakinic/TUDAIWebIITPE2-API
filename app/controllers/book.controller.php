@@ -9,7 +9,8 @@ class BookController extends GenericApiController {
         parent::__construct(
                 new BookModel(),
                 ['isbn', 'title', 'id_author', 'id_genre', 'price', 'url_cover'],
-                ['isbn'     =>'books.isbn', 
+                ['id'       =>'books.id', 
+                 'isbn'     =>'books.isbn', 
                  'title'    =>'books.title',
                  'id_author'=>'books.id_author', 
                  'id_genre' =>'books.id_genre', 

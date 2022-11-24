@@ -1,6 +1,5 @@
 <?php
 require_once "./app/views/api.view.php";
-require_once "./app/helpers/auth.helper.php";
 
 abstract class GenericApiController {
     protected $model;
@@ -45,8 +44,11 @@ abstract class GenericApiController {
     function get($params = null) {
         $id = $params[':ID'];
         $item = $this-> model-> get($id);
-
-        $this->view->response($item, 200);
+        if ($item) {
+            $this->view->response($item, 200);
+        } else {
+            $this->view->response("No existe el recurso con id $id", 404);
+        }
     }
     /**
      * MUESTRA TODOS LOS ITEMS DE LA ENTIDAD
@@ -71,11 +73,11 @@ abstract class GenericApiController {
             $value = strtolower($value);
             switch ($key) {
                 case 'orderby':
-                    $key = sort_by;
+                    $key = 'sort_by';
                 case 'order_by':
-                    $key = sort_by;
+                    $key = 'sort_by';
                 case 'sortby':
-                    $key = sort_by;
+                    $key = 'sort_by';
                 case 'sort_by':
                     if (isset($this->validFilterColumns[$value])) {
                         $res['sort_by'] = $value;
@@ -95,7 +97,7 @@ abstract class GenericApiController {
                 case 'limit':
                     $limit = (int)$value;
                     if ($limit < self::MIN_LIMIT || $limit > self::MAX_LIMIT) {
-                        $this->view->response("limit debe ser un valor entre " . BookController::MIN_LIMIT ." y " . BookController::MAX_LIMIT, 400);
+                        $this->view->response("limit debe ser un valor entre " . self::MIN_LIMIT ." y " . self::MAX_LIMIT, 400);
                         die;
                     }
                     $res['limit'] = $limit;
@@ -170,8 +172,6 @@ abstract class GenericApiController {
     */
    function update ($params = null) {
        $id=$params[":ID"];
-       //VERIFICA QUE ESTÉ LOGUEADO
-       // AuthHelper::checkLoggedIn();
        
        $item = $this->getAndValidateBeforeUpdate($id);
 
@@ -185,8 +185,6 @@ abstract class GenericApiController {
      */
     public function delete ($params = null) {
         $id=$params[":ID"];
-        //VERIFICA QUE ESTÉ LOGUEADO
-        // AuthHelper::checkLoggedIn();
         
         $item = $this->getAndValidateBeforeDelete($id);
         $this->model->remove($id);

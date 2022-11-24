@@ -1,190 +1,179 @@
-# TUDAIWebIITPE2-API
-# API Rest RESTful
-## _WEB 2 - TP Especial - Parte 2_
+# _WEB 2 - TP Especial - Parte 2_ API RESTful
+_Iglesias Coqueti, Joaquín_
 
-### Endpoints:
-
+## Endpoints:
 - books
-- books/:id
+Referencia a libros
+
 - authors
-- authors/:id
+Referencia a autores de libros
+
 - genres
-- genres/:id
+Referencia a géneros de libros
 
-## Verbos
+Cada vez que aparezca escrito $endpoint, significará que se podrá elegir cualquiera de los valores listados, acorde a la consulta que se necesite ejecutar.
 
-- GET
-- PUT
-- POST
-- DELETE
+# UTILIZAR LA API
+## OBTENER ENTIDAD POR ID
+- GET /api/$endpoint/:id
 
-Markdown is a lightweight markup language based on the formatting conventions
-that people naturally use in email.
-As [John Gruber] writes on the [Markdown site][df1]
+Devuelve el objeto con id :id de la entidad seleccionada en formato JSON.
 
-> The overriding design goal for Markdown's
-> formatting syntax is to make it as readable
-> as possible. The idea is that a
-> Markdown-formatted document should be
-> publishable as-is, as plain text, without
-> looking like it's been marked up with tags
-> or formatting instructions.
+Código de respuesta HTTP:
+- 200 si se ejecutó la consulta exitosamente
+- 404 si no existe
 
-This text you see here is *actually- written in Markdown! To get a feel
-for Markdown's syntax, type some text into the left window and
-watch the results in the right.
+## OBTENER LISTADO DE ENTIDADES
+- GET /api/$endpoint
 
-## Tech
+Devuelve arreglo de objetos de la entidad seleccionada en formato JSON. 
+Ver sección PARÁMETROS GET para personalizar la búsqueda
 
-Dillinger uses a number of open source projects to work properly:
+Códigos de respuesta HTTP:
+- 200 si se ejecutó la consulta exitosamente
+- 400 si se envió algún parámetro incorrecto
 
-- [AngularJS] - HTML enhanced for web apps!
-- [Ace Editor] - awesome web-based text editor
-- [markdown-it] - Markdown parser done right. Fast and easy to extend.
-- [Twitter Bootstrap] - great UI boilerplate for modern web apps
-- [node.js] - evented I/O for the backend
-- [Express] - fast node.js network app framework [@tjholowaychuk]
-- [Gulp] - the streaming build system
-- [Breakdance](https://breakdance.github.io/breakdance/) - HTML
-to Markdown converter
-- [jQuery] - duh
+## EDITAR UNA ENTIDAD EXISTENTE
+- PUT /api/$endpoint/:id
 
-And of course Dillinger itself is open source with a [public repository][dill]
- on GitHub.
+Edita objeto en $endpoint con id :id
 
-## Installation
+Enviar en el body un JSON con la entidad a agregar respetando las estructuras mencionadas en sección EJEMPLO BODY A UTILIZAR CON POST Y PUT.
 
-Dillinger requires [Node.js](https://nodejs.org/) v10+ to run.
+Códigos de respuesta HTTP:
+- 200 si se ejecutó la operación exitosamente
+- 400 si no se respeta la estructura de la entidad
+- 404 si no existe el objeto con id :id
 
-Install the dependencies and devDependencies and start the server.
+## CREAR ENTIDAD
+- POST /api/$endpoint
+Debe enviarse en el body un JSON con la entidad a agregar respetando las estructuras mencionadas en sección ESTRUCTURA ENTIDADES A UTILIZAR CON POST Y PUT.
 
-```sh
-cd dillinger
-npm i
-node app
-```
+Códigos de respuesta HTTP:
+- 201 si se ejecutó la operación exitosamente
+- 400 si no se respeta la estructura de la entidad
 
-For production environments...
+## ELIMINAR ENTIDAD
+- DELETE /api/$endpoint/:id
 
-```sh
-npm install --production
-NODE_ENV=production node app
-```
+Elimina objeto en $endpoint con id :id
 
-## Plugins
+Códigos de respuesta HTTP:
+- 200 si se ejecutó la operación exitosamente
+- 400 si se pretende eliminar un elemento que contiene otros elementos referenciados.
+- 404 si no existe el objeto con id :id
 
-Dillinger is currently extended with the following plugins.
-Instructions on how to use them in your own application are linked below.
+# PARÁMETROS GET
+Para personalizar el listado a obtener puede enviarse por GET un listado de duplas CLAVE-VALOR.
+Los posibles valores para CLAVE y VALOR no son sensibles a mayúsculas y minúsculas (no case sensitive).
 
-| Plugin | README |
-| ------ | ------ |
-| Dropbox | [plugins/dropbox/README.md][PlDb] |
-| GitHub | [plugins/github/README.md][PlGh] |
-| Google Drive | [plugins/googledrive/README.md][PlGd] |
-| OneDrive | [plugins/onedrive/README.md][PlOd] |
-| Medium | [plugins/medium/README.md][PlMe] |
-| Google Analytics | [plugins/googleanalytics/README.md][PlGa] |
+Se pueden definir varias duplas en la consulta respetando la forma:
 
-## Development
+GET api/$endpoint?clave1=valor1&clave2=valor2& ... &claveX=valorX
 
-Want to contribute? Great!
+## ORDENAR
+CLAVE: orderby | order_by | sortby | sort_by
 
-Dillinger uses Gulp + Webpack for fast developing.
-Make a change in your file and instantaneously see your updates!
+POSIBLES VALORES para books:
+id | isbn | title | id_author | id_genre | price | url_cover | genre | author 
 
-Open your favorite Terminal and run these commands.
+POSIBLES VALORES para authors:
+id | author | note
 
-First Tab:
+POSIBLES VALORES para genres:
+id | genre | note
 
-```sh
-node app
-```
+### ORDEN ASCENDENTE O DESCENDENTE
+CLAVE: ASC | DESC
 
-Second Tab:
+VALOR: no se tiene en cuenta, puede ser omitido
 
-```sh
-gulp watch
-```
+Determina que se pretende un orden ascendente (ASC) o descendente (DESC). 
+Por defecto el orden es ASC
 
-(optional) Third:
+Ejemplo: 
 
-```sh
-karma test
-```
+GET api/books?orderby=author&desc
 
-#### Building for source
+devolverá un listado de libros ordenado descendentemente por autor.
 
-For production release:
+## PAGINADO
+CLAVE: limit | l
 
-```sh
-gulp build --prod
-```
+VALOR: número entre 1 y 1000
 
-Generating pre-built zip archives for distribution:
+Determina la máxima cantidad de objetos a devolver en el arreglo.
+Si no se especifica, el valor por defecto es de 30.
 
-```sh
-gulp build dist --prod
-```
 
-## Docker
+CLAVE: page | p
 
-Dillinger is very easy to install and deploy in a Docker container.
+VALOR: número de página
 
-By default, the Docker will expose port 8080, so change this within the
-Dockerfile if necessary. When ready, simply use the Dockerfile to
-build the image.
+Determina desde qué página se pretende obtener los resultados.
 
-```sh
-cd dillinger
-docker build -t <youruser>/dillinger:${package.json.version} .
-```
 
-This will create the dillinger image and pull in the necessary dependencies.
-Be sure to swap out `${package.json.version}` with the actual
-version of Dillinger.
+Ejemplo: ?l=100&p=3 devolverá desde el objeto 301 hasta el 400, siempre que éstos existan.
 
-Once done, run the Docker image and map the port to whatever you wish on
-your host. In this example, we simply map port 8000 of the host to
-port 8080 of the Docker (or whatever port was exposed in the Dockerfile):
+En caso de no existir los objetos solicitados no se producirá error, sólo recibirá un arreglo vacío: [].
 
-```sh
-docker run -d -p 8000:8080 --restart=always --cap-add=SYS_ADMIN --name=dillinger <youruser>/dillinger:${package.json.version}
-```
+## BÚSQUEDA CON FILTRO
+Para realizar una búsqueda se debe elegir como CLAVE una o varios campos válidos con el correspondiente valor a buscar.
 
-> Note: `--capt-add=SYS-ADMIN` is required for PDF rendering.
+CLAVE: campo válido
 
-Verify the deployment by navigating to your server address in
-your preferred browser.
+VALOR: valor a buscar
 
-```sh
-127.0.0.1:8000
-```
+Posibles campos para books:
+id | isbn | title | id_author | id_genre | price | url_cover | genre | author 
 
-## License
+Posibles campos para authors:
+id | author | note
 
-MIT
+Posibles campos para genres:
+id | genre | note
 
-**Free Software, Hell Yeah!**
 
-[//]: # (These are reference links used in the body of this note and get stripped out when the markdown processor does its job. There is no need to format nicely because it shouldn't be seen. Thanks SO - http://stackoverflow.com/questions/4823468/store-comments-in-markdown-syntax)
+CLAVE: operator | o
 
-   [dill]: <https://github.com/joemccann/dillinger>
-   [git-repo-url]: <https://github.com/joemccann/dillinger.git>
-   [john gruber]: <http://daringfireball.net>
-   [df1]: <http://daringfireball.net/projects/markdown/>
-   [markdown-it]: <https://github.com/markdown-it/markdown-it>
-   [Ace Editor]: <http://ace.ajax.org>
-   [node.js]: <http://nodejs.org>
-   [Twitter Bootstrap]: <http://twitter.github.com/bootstrap/>
-   [jQuery]: <http://jquery.com>
-   [@tjholowaychuk]: <http://twitter.com/tjholowaychuk>
-   [express]: <http://expressjs.com>
-   [AngularJS]: <http://angularjs.org>
-   [Gulp]: <http://gulpjs.com>
+VALOR: like | equal | = | > | >= | < | <=
 
-   [PlDb]: <https://github.com/joemccann/dillinger/tree/master/plugins/dropbox/README.md>
-   [PlGh]: <https://github.com/joemccann/dillinger/tree/master/plugins/github/README.md>
-   [PlGd]: <https://github.com/joemccann/dillinger/tree/master/plugins/googledrive/README.md>
-   [PlOd]: <https://github.com/joemccann/dillinger/tree/master/plugins/onedrive/README.md>
-   [PlMe]: <https://github.com/joemccann/dillinger/tree/master/plugins/medium/README.md>
-   [PlGa]: <https://github.com/RahulHP/dillinger/blob/master/plugins/googleanalytics/README.md>
+Especifica el tipo de comparador a utilizar, si no se especifica por defecto se utiliza =.
+
+El operador like permite utilizar carácteres especiales de SQL como '%'.
+
+Si se realizan varios filtros en la consulta, todos utilizarán el mismo operador.
+
+## EJEMPLO BODY A UTILIZAR CON POST Y PUT
+### books
+{
+
+    "isbn": "9789501532203",
+
+    "title": "CURAME",
+
+    "id_author": 1197,
+
+    "id_genre": 10,
+
+    "price": "2880.00",
+
+    "url_cover": ""
+}
+
+Para que se pueda completar la transcción id_author y id_genre deben referenciar a un un autor o género válido, respectivamente.
+
+### authors
+{
+    
+    "author": "autor",
+
+    "note": "creadO desde POSTMAN por API"
+ }
+### genres
+{
+    
+    "genre": "Autor de prueba por API",
+
+    "note": "creadO desde POSTMAN por API"
+ }
