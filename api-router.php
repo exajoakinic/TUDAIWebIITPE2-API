@@ -3,6 +3,7 @@ require_once './libs/router.php';
 require_once './app/controllers/book.controller.php';
 require_once './app/controllers/author.controller.php';
 require_once './app/controllers/genre.controller.php';
+require_once './app/controllers/auth-api.controller.php';
 
 // crea el router
 $router = new Router();
@@ -21,6 +22,7 @@ foreach ($endpoints as $i) {
         $router->addRoute($i['endpoint'].'/:ID', 'DELETE', $i['controller'], 'delete');
     }
 }
+$router->addRoute('auth/token', 'GET', 'AuthApiController', 'getToken');
 
 $router->setDefaultRoute('BookController', 'defaultAction');
 

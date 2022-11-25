@@ -14,7 +14,7 @@ Referencia a géneros de libros
 Cada vez que aparezca escrito $endpoint, significará que se podrá elegir cualquiera de los valores listados, acorde a la consulta que se necesite ejecutar.
 
 # UTILIZAR LA API
-## OBTENER ENTIDAD POR ID
+## OBTENER ENTIDAD POR ID (público)
 - GET /api/$endpoint/:id
 
 Devuelve el objeto con id :id de la entidad seleccionada en formato JSON.
@@ -23,7 +23,7 @@ Código de respuesta HTTP:
 - 200 si se ejecutó la consulta exitosamente
 - 404 si no existe
 
-## OBTENER LISTADO DE ENTIDADES
+## OBTENER LISTADO DE ENTIDADES (público)
 - GET /api/$endpoint
 
 Devuelve arreglo de objetos de la entidad seleccionada en formato JSON. 
@@ -33,7 +33,12 @@ Códigos de respuesta HTTP:
 - 200 si se ejecutó la consulta exitosamente
 - 400 si se envió algún parámetro incorrecto
 
-## EDITAR UNA ENTIDAD EXISTENTE
+## OBTENER TOKEN
+- GET /api/token
+Enviar usuario y contraseña en el header mediante auth basic.
+
+El token será necesario para realizar cualquier pedido ABM y deberá enviarse en el header mediante Auth Bearer Token
+## EDITAR UNA ENTIDAD EXISTENTE (requiere token)
 - PUT /api/$endpoint/:id
 
 Edita objeto en $endpoint con id :id
@@ -45,7 +50,7 @@ Códigos de respuesta HTTP:
 - 400 si no se respeta la estructura de la entidad
 - 404 si no existe el objeto con id :id
 
-## CREAR ENTIDAD
+## CREAR ENTIDAD (requiere token)
 - POST /api/$endpoint
 Debe enviarse en el body un JSON con la entidad a agregar respetando las estructuras mencionadas en sección ESTRUCTURA ENTIDADES A UTILIZAR CON POST Y PUT.
 
@@ -53,7 +58,7 @@ Códigos de respuesta HTTP:
 - 201 si se ejecutó la operación exitosamente
 - 400 si no se respeta la estructura de la entidad
 
-## ELIMINAR ENTIDAD
+## ELIMINAR ENTIDAD (requiere token)
 - DELETE /api/$endpoint/:id
 
 Elimina objeto en $endpoint con id :id

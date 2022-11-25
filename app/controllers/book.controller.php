@@ -2,30 +2,33 @@
 require_once "./app/controllers/generic.controller.php";
 require_once "./app/models/book.model.php";
 
-class BookController extends GenericApiController {
+class BookController extends GenericApiController
+{
 
-
-    function __construct() {
+    function __construct()
+    {
         parent::__construct(
-                new BookModel(),
-                ['isbn', 'title', 'id_author', 'id_genre', 'price', 'url_cover'],
-                ['id'       =>'books.id', 
-                 'isbn'     =>'books.isbn', 
-                 'title'    =>'books.title',
-                 'id_author'=>'books.id_author', 
-                 'id_genre' =>'books.id_genre', 
-                 'price'    =>'books.price', 
-                 'url_cover'=>'books.url_cover',
-                 'genre'    =>'genres.genre',
-                 'author'   =>'authors.author',
-                ]
-            );
-    }    
+            new BookModel(),
+            ['isbn', 'title', 'id_author', 'id_genre', 'price', 'url_cover'],
+            [
+                'id' => 'books.id',
+                'isbn' => 'books.isbn',
+                'title' => 'books.title',
+                'id_author' => 'books.id_author',
+                'id_genre' => 'books.id_genre',
+                'price' => 'books.price',
+                'url_cover' => 'books.url_cover',
+                'genre' => 'genres.genre',
+                'author' => 'authors.author',
+            ]
+        );
+    }
 
     /**
      * Sobreescrive función de validación de post por necesitar más validaciones
      */
-    protected function getAndValidateFromPost() {
+    protected function getAndValidateFromPost()
+    {
         $book = parent::getAndValidateFromPost();
         // Verifica que exista el autor recibido
         if (!(new AuthorModel)->get($book->id_author)) {
@@ -37,13 +40,13 @@ class BookController extends GenericApiController {
         if (!(new GenreModel)->get($book->id_genre)) {
             $this->view->response("Campo 'id_genre' no referencia a un género existente", "400");
             die;
-            }
-            /* 
+        }
+        /* 
         // Verifica si se cargó una imagen por archivo solicitando al model que su creación si es necesario
         if (!empty($_FILES["img_file_cover"]["name"])) {
-            $newUrlFile = $this->model->insertCoverFile($_FILES["img_file_cover"]);
-            //Referencia url_cover a la nueva dirección
-            $book->url_cover = $newUrlFile;
+        $newUrlFile = $this->model->insertCoverFile($_FILES["img_file_cover"]);
+        //Referencia url_cover a la nueva dirección
+        $book->url_cover = $newUrlFile;
         } */
 
         // Fuerza que el precio sea un valor numérico
@@ -56,19 +59,21 @@ class BookController extends GenericApiController {
     /**
      * Sobreescrive validación antes de editar por necesitar eliminar la tapa del servidor
      */
-    protected function getAndValidateBeforeEdit($id) {
+    protected function getAndValidateBeforeEdit($id)
+    {
         $book = parent::getAndValidateBeforeEdit($id);
-     /*    $oldBook = $this->model->get($id);
+        /*    $oldBook = $this->model->get($id);
         if (!empty($_FILES["img_file_cover"]["name"])
-            || $book->url_cover != $oldBook->url_cover) {
-                        $this->model->removeCoverFile($oldBook->url_cover);
+        || $book->url_cover != $oldBook->url_cover) {
+        $this->model->removeCoverFile($oldBook->url_cover);
         } */
         return $book;
     }
     /**
      * Sobreescrive validación antes de borrar por necesitar eliminar la tapa del servidor
      */
-    protected function getAndValidateBeforeDelete($id) {
+    protected function getAndValidateBeforeDelete($id)
+    {
         $book = parent::getAndValidateBeforeDelete($id);
         $this->model->removeCoverFile($book->url_cover);
         return $book;
